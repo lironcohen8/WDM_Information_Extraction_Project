@@ -1,0 +1,259 @@
+C:\Users\user\OneDrive\Desktop\Liron\Studies\WDM\WDM_Information_Extraction_Project\venv\Scripts\python.exe C:/Users/user/OneDrive/Desktop/Liron/Studies/WDM/WDM_Information_Extraction_Project/geo_qa.py
+China
+India
+United_States
+3,796,742 sq mi (9,833,520 km does not look like a valid URI, trying to serialize this will break.
+Indonesia
+Pakistan
+Brazil
+Nigeria
+Bangladesh
+Russia
+Mexico
+Japan
+Ethiopia
+Philippines
+Egypt
+Vietnam
+Democratic_Republic_of_the_Congo
+Germany
+Turkey
+Iran
+Thailand
+United_Kingdom
+France
+Italy
+South_Africa
+Tanzania
+Myanmar
+53,582,855 (2017) does not look like a valid URI, trying to serialize this will break.
+Kenya
+South_Korea
+Colombia
+Spain
+Argentina
+Uganda
+Ukraine
+Algeria
+Sudan
+Iraq
+Afghanistan
+Poland
+Canada
+Morocco
+Saudi_Arabia
+Uzbekistan
+Peru
+Malaysia
+Angola
+Mozambique
+Yemen
+Ghana
+Nepal
+Venezuela
+Madagascar
+North_Korea
+Ivory_Coast
+Cameroon
+Australia
+Taiwan
+Niger
+24,112,753 ( does not look like a valid URI, trying to serialize this will break.
+Sri_Lanka
+Burkina_Faso
+Mali
+Romania
+Malawi
+Chile
+Kazakhstan
+Zambia
+Guatemala
+Ecuador
+Netherlands
+Syria
+17,500,657 ( does not look like a valid URI, trying to serialize this will break.
+Cambodia
+Senegal
+Chad
+Somalia
+Zimbabwe
+Guinea
+Rwanda
+Benin
+Tunisia
+11,733,059 ( does not look like a valid URI, trying to serialize this will break.
+Belgium
+Bolivia
+11,428,245 ( does not look like a valid URI, trying to serialize this will break.
+Cuba
+Haiti
+South_Sudan
+Burundi
+12,778,250 ( does not look like a valid URI, trying to serialize this will break.
+Dominican_Republic
+Czech_Republic
+Greece
+10,678,632 (1 January 2021) does not look like a valid URI, trying to serialize this will break.
+Portugal
+Jordan
+Azerbaijan
+Sweden
+United_Arab_Emirates
+Honduras
+Hungary
+Belarus
+Tajikistan
+Austria
+Papua_New_Guinea
+8,935,000 ( does not look like a valid URI, trying to serialize this will break.
+Serbia
+Switzerland
+Israel
+Togo
+Sierra_Leone
+Hong_Kong
+Laos
+Paraguay
+Bulgaria
+Lebanon
+Libya
+Nicaragua
+El_Salvador
+Kyrgyzstan
+Turkmenistan
+Singapore
+Denmark
+Finland
+Slovakia
+Republic_of_the_Congo
+5,449,270 ( does not look like a valid URI, trying to serialize this will break.
+5,657,000 ( does not look like a valid URI, trying to serialize this will break.
+Norway
+Costa_Rica
+State_of_Palestine
+Oman
+Liberia
+Republic_of_Ireland
+New_Zealand
+Central_African_Republic
+Mauritania
+Panama
+Kuwait
+Croatia
+Moldova
+Georgia_(country)
+Eritrea
+Uruguay
+Bosnia_and_Herzegovina
+Mongolia
+Armenia
+Jamaica
+Puerto_Rico
+Albania
+Qatar
+Lithuania
+Namibia
+2,550,226 ( does not look like a valid URI, trying to serialize this will break.
+The_Gambia
+Botswana
+Gabon
+Lesotho
+North_Macedonia
+Slovenia
+Guinea-Bissau
+1,726,000 ( does not look like a valid URI, trying to serialize this will break.
+Latvia
+Bahrain
+Trinidad_and_Tobago
+Equatorial_Guinea
+Estonia
+East_Timor
+Mauritius
+1,340,513 ( does not look like a valid URI, trying to serialize this will break.
+Cyprus
+Eswatini
+Djibouti
+Fiji
+R%C3%A9union
+Comoros
+850,886 ( does not look like a valid URI, trying to serialize this will break.
+Guyana
+Bhutan
+Solomon_Islands
+Macau
+Montenegro
+Luxembourg
+Suriname
+Cape_Verde
+483,628 ( does not look like a valid URI, trying to serialize this will break.
+Maldives
+557,426 or 379,270 does not look like a valid URI, trying to serialize this will break.
+Guadeloupe
+Malta
+Brunei
+Belize
+The_Bahamas
+Martinique
+400,516 ( does not look like a valid URI, trying to serialize this will break.
+Iceland
+Vanuatu
+Barbados
+New_Caledonia
+French_Guiana
+French_Polynesia
+Mayotte
+S%C3%A3o_Tom%C3%A9_and_Pr%C3%ADncipe
+Samoa
+Saint_Lucia
+Guam
+184,961 ( does not look like a valid URI, trying to serialize this will break.
+Cura%C3%A7ao
+Kiribati
+Federated_States_of_Micronesia
+Grenada
+Tonga
+Saint_Vincent_and_the_Grenadines
+Aruba
+United_States_Virgin_Islands
+Seychelles
+99,331 ( does not look like a valid URI, trying to serialize this will break.
+Antigua_and_Barbuda
+Isle_of_Man
+Andorra
+Dominica
+Cayman_Islands
+Bermuda
+Marshall_Islands
+Greenland
+Northern_Mariana_Islands
+American_Samoa
+77 sq mi (200 km does not look like a valid URI, trying to serialize this will break.
+Saint_Kitts_and_Nevis
+Faroe_Islands
+Sint_Maarten
+Monaco
+Turks_and_Caicos_Islands
+Liechtenstein
+San_Marino
+Gibraltar
+British_Virgin_Islands
+Caribbean_Netherlands
+30,030 ( does not look like a valid URI, trying to serialize this will break.
+Palau
+Cook_Islands
+Anguilla
+Tuvalu
+Wallis_and_Futuna
+11,900 ( does not look like a valid URI, trying to serialize this will break.
+11,558 ( does not look like a valid URI, trying to serialize this will break.
+Nauru
+Saint_Helena,_Ascension_and_Tristan_da_Cunha
+Saint_Pierre_and_Miquelon
+Montserrat
+Falkland_Islands
+4,649 (2018) does not look like a valid URI, trying to serialize this will break.
+Niue
+Tokelau
+Vatican_City
+
+Process finished with exit code 0
