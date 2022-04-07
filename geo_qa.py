@@ -34,7 +34,7 @@ def create_graph():
 
 
 def add_entities_to_graph(g, countries_urls):
-    for country_url in countries_urls:
+    for country_url in countries_urls[:3]:
         country_name = country_url.split("/")[-1]
         print(country_name)
         r = requests.get(country_url)
@@ -182,6 +182,7 @@ def generate_born_count_sparql_query(country_name):
 # TODO: Check Russia values
 # TODO: fix birth place query
 # TODO: Add new question
+# TODO: Check on NOVA
 
 
 if __name__ == '__main__':
