@@ -36,7 +36,7 @@ def create_graph():
 def add_entities_to_graph(g, countries_urls):
     for country_url in countries_urls:
         country_name = country_url.split("/")[-1]
-        # print(country_name)
+        print(country_name)
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
         add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
@@ -52,7 +52,7 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
         result_name = result_url.split("/")[-1].strip().split(" ")[0]
-        print(result_name, "-", relation, "-", country_name)
+        # TODO delete after debug print(result_name, "-", relation, "-", country_name)
         g.add((rdflib.URIRef(result_name),
                rdflib.URIRef(relation),
                rdflib.URIRef(country_name)))
@@ -72,7 +72,7 @@ def add_person_entity_to_graph(g, doc, person_name, xpath_query, relation):
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
         result_name = result_url.split(" ")[-1].strip()
-        print(person_name, "-", relation, "-", result_name)
+        # TODO delete after debug print(person_name, "-", relation, "-", result_name)
         g.add((rdflib.URIRef(person_name),
                rdflib.URIRef(relation),
                rdflib.URIRef(result_name)))
