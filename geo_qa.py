@@ -6,8 +6,8 @@ import rdflib
 
 WIKI_PREFIX = "http://en.wikipedia.org"
 LIST_OF_COUNTRIES_URL = "https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)"
-PRESIDENTS_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'President']/ancestor::tr/td/a/@href"
-PRIME_MINISTERS_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'Prime Minister']/ancestor::tr/td/a/@href"
+PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'President']/ancestor::tr/td/a/@href"
+PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'Prime Minister']/ancestor::tr/td/a/@href"
 POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Population')]/following::tr[1]/td/text()[1]"
 AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
 GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'Government']/ancestor::tr/td/a/@href"
@@ -16,6 +16,7 @@ PERSON_BDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'B
 PERSON_BPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/text()[last()]"
 
 graph = None
+query = None
 
 
 def get_countries_urls():
@@ -41,8 +42,8 @@ def add_entities_to_graph(g, countries_urls):
         # print(country_name)
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
-        add_country_entity_to_graph(g, doc, country_name, PRESIDENTS_XPATH_QUERY, 'president_of')
-        add_country_entity_to_graph(g, doc, country_name, PRIME_MINISTERS_XPATH_QUERY, 'prime_minister_of')
+        add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
+        add_country_entity_to_graph(g, doc, country_name, PRIME_MINISTER_XPATH_QUERY, 'prime_minister_of')
         add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
         add_country_entity_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
         add_country_entity_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
@@ -84,11 +85,108 @@ def run_question(question):
     # TODO: complete
     pass
 
+
+def parse_question(question):
+    question_word = question.split(' ')[0]
+    if question_word == "Who":  # questions 1,2,11
+        if "president" in question:
+            country_name = question.split("of ")[-1][:-1]
+            generate_country_sparql_query(country_name, 'president_of')
+        elif "minister" in question:
+            country_name = question.split("of ")[-1][:-1]
+            generate_country_sparql_query(country_name, 'prime_minister_of')
+        else:
+            # TODO: complete
+            pass
+    elif question_word == "What":  # questions 3,4,5,6
+        if "population" in question:
+            country_name = question.split("of ")[-1][:-1]
+            generate_country_sparql_query(country_name, 'population_of')
+        elif "area" in question:
+            country_name = question.split("of ")[-1][:-1]
+            generate_country_sparql_query(country_name, 'area_of')
+        elif "government" in question:
+            country_name = question.split("in ")[-1][:-1]
+            generate_country_sparql_query(country_name, 'government_in')
+        else:
+            country_name = question.split("of ")[-1][:-1]
+            generate_country_sparql_query(country_name, 'capital_of')
+    elif question_word == "When":  # questions 7,9
+        if "president" in question:
+            country_name = question.split("of ")[-1][:-6]
+            generate_person_sparql_query(country_name, 'born_on', 'president_of')
+        elif "minister" in question:
+            country_name = question.split("of ")[-1][:-6]
+            generate_person_sparql_query(country_name, 'born_on', 'prime_minister_of')
+    elif question_word == "Where":  # questions 8,10
+        if "president" in question:
+            country_name = question.split("of ")[-1][:-6]
+            generate_person_sparql_query(country_name, 'born_in', 'president_of')
+        elif "minister" in question:
+            country_name = question.split("of ")[-1][:-6]
+            generate_person_sparql_query(country_name, 'born_in', 'prime_minister_of')
+    elif question_word == "List":  # question 13
+        substring = question.split(" ")[-1]
+        generate_substring_sparql_query(substring)
+    else:  # questions 12,14
+        if "are also" in question:
+            form1 = question.split("many ")[-1].split(" are")[0]
+            form2 = question.split("also ")[-1][:-1]
+            generate_forms_sparql_query(form1, form2)
+        else:
+            country_name = question.split("in ")[-1][:-1]
+            generate_born_count_sparql_query(country_name)
+        
+
+def generate_country_sparql_query(country_name, relation):
+    global query
+    query = "select ?p " \
+            f"where ?p {relation} {country_name}"
+
+
+def generate_person_sparql_query(country_name, relation, relation_title):
+    global query
+    query = "select ?d where " \
+            "{" \
+            f"?p {relation_title} {country_name} ." \
+            f"?p {relation} ?d" \
+            "}"
+
+
+def generate_substring_sparql_query(substring):
+    global query
+    query = "select ?n where " \
+            "{" \
+            "?n capital_of ?c ." \
+            f"filter contains(?c,{substring})" \
+            "}"
+
+
+def generate_forms_sparql_query(form1, form2):
+    global query
+    query = "select count(distinct ?c) where " \
+            "{" \
+            "?fs government_in ?c ." \
+            f"filter contains(?fs,{form1})" \
+            f"filter contains(?fs,{form2})" \
+            "}"
+
+
+def generate_born_count_sparql_query(country_name):
+    global query
+    query = "select count(distinct ?p) where " \
+            "{" \
+            "?p president_of ?c ." \
+            f"?p born_in {country_name}" \
+            "}"
+
+
 # TODO: Add squared in answer of area
 # TODO: Add comma separating in answer in government
 # TODO: Add encodings to fix president of Mexico for example
 # TODO: Check Russia values
 # TODO: fix birth place query
+# TODO: Add our question
 
 
 if __name__ == '__main__':
