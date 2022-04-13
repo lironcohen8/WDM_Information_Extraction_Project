@@ -23,7 +23,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Tonga"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Isle_of_Man"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -88,58 +88,61 @@ def ask_question(question):
     graph.parse(GRAPH_FILE_NAME, format="nt")
     raw_answer = graph.query(sparql_query)
     answer = list(raw_answer)[0].p.split("/")[-1].replace('_', ' ')
+    if "area" in question:
+        answer += " km squared"
     print(answer)
 
 
 def parse_question_to_query(question):
-    question_word = question.split(' ')[0]
+    question = question.replace(' ', '_')
+    question_word = question.split('_')[0]
     if question_word == "Who":  # questions 1,2,11
         if "president" in question:
-            country_name = question.split("of ")[-1][:-1]
+            country_name = question.split("of_", 1)[-1][:-1]
             return generate_country_sparql_query( country_name, "president_of")
         elif "minister" in question:
-            country_name = question.split("of ")[-1][:-1]
+            country_name = question.split("of_", 1)[-1][:-1]
             return generate_country_sparql_query(country_name, 'prime_minister_of')
         else:
             # TODO: complete
             pass
     elif question_word == "What":  # questions 3,4,5,6
         if "population" in question:
-            country_name = question.split("of ")[-1][:-1]
+            country_name = question.split("of_", 1)[-1][:-1]
             return generate_country_sparql_query(country_name, 'population_of')
         elif "area" in question:
-            country_name = question.split("of ")[-1][:-1]
+            country_name = question.split("of_", 1)[-1][:-1]
             return generate_country_sparql_query(country_name, 'area_of')
         elif "government" in question:
-            country_name = question.split("in ")[-1][:-1]
+            country_name = question.split("in_", 1)[-1][:-1]
             return generate_country_sparql_query(country_name, 'government_in')
         else:
-            country_name = question.split("of ")[-1][:-1]
+            country_name = question.split("of_", 1)[-1][:-1]
             return generate_country_sparql_query(country_name, 'capital_of')
     elif question_word == "When":  # questions 7,9
         if "president" in question:
-            country_name = question.split("of ")[-1][:-6]
+            country_name = question.split("of_", 1)[-1][:-6]
             return generate_person_sparql_query(country_name, 'born_on', 'president_of')
         elif "minister" in question:
-            country_name = question.split("of ")[-1][:-6]
+            country_name = question.split("of_", 1)[-1][:-6]
             return generate_person_sparql_query(country_name, 'born_on', 'prime_minister_of')
     elif question_word == "Where":  # questions 8,10
         if "president" in question:
-            country_name = question.split("of ")[-1][:-6]
+            country_name = question.split("of_", 1)[-1][:-6]
             return generate_person_sparql_query(country_name, 'born_in', 'president_of')
         elif "minister" in question:
-            country_name = question.split("of ")[-1][:-6]
+            country_name = question.split("of_", 1)[-1][:-6]
             return generate_person_sparql_query(country_name, 'born_in', 'prime_minister_of')
     elif question_word == "List":  # question 13
-        substring = question.split(" ")[-1]
+        substring = question.split("_")[-1]
         return generate_substring_sparql_query(substring)
     else:  # questions 12,14
         if "are also" in question:
-            form1 = question.split("many ")[-1].split(" are")[0]
-            form2 = question.split("also ")[-1][:-1]
+            form1 = question.split("many_", 1)[-1].split("_are", 1)[0]
+            form2 = question.split("also_", 1)[-1][:-1]
             return generate_forms_sparql_query(form1, form2)
         else:
-            country_name = question.split("in ")[-1][:-1]
+            country_name = question.split("in_", 1)[-1][:-1]
             return generate_born_count_sparql_query(country_name)
         
 
