@@ -23,7 +23,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Isle_of_Man"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Argentina"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -51,8 +51,7 @@ def add_entities_to_graph(g, countries_urls):
 
 def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
-    if len(query_result_list) > 0:
-        result_url = query_result_list[0]
+    for result_url in query_result_list:
         result_name = result_url.split("/")[-1].strip().split()[0]
         #result_name = "_".join(result_name.split() )
 
@@ -87,7 +86,8 @@ def ask_question(question):
     graph = rdflib.Graph()
     graph.parse(GRAPH_FILE_NAME, format="nt")
     raw_answer = graph.query(sparql_query)
-    answer = list(raw_answer)[0].p.split("/")[-1].replace('_', ' ')
+    parsed_list = [ans.p.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)]
+    answer = ', '.join(parsed_list)
     if "area" in question:
         answer += " km squared"
     print(answer)
