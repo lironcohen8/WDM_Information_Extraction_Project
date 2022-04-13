@@ -23,7 +23,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Republic_of_the_Congo"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Israel"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -86,6 +86,7 @@ def ask_question(question):
     graph = rdflib.Graph()
     graph.parse(GRAPH_FILE_NAME, format="nt")
     raw_answer = graph.query(sparql_query)
+    answer = ""
     if "Who" in question and "president" not in question and "minister" not in question:
         parsed_list = [ans.pre_c for ans in list(raw_answer)]
         if parsed_list[0] != None:
