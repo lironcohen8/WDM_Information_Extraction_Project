@@ -8,11 +8,11 @@ import rdflib
 WIKI_PREFIX = "http://en.wikipedia.org"
 GRAPH_FILE_NAME = "ontology.nt"
 LIST_OF_COUNTRIES_URL = "https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)"
-PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'President']/ancestor::tr/td/a/@href"
-PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')]//a[text() = 'Prime Minister']/ancestor::tr/td/a/@href"
+PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'President']/ancestor::tr/td//a/@href"
+PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')]//a[text() = 'Prime Minister']/ancestor::tr/td//a/@href"
 POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Population')]/following::tr[1]/td/text()[1]"
 AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
-GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'Government']/ancestor::tr/td/a/@href"
+GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'Government']/ancestor::tr/td//a/@href"
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Capital']/following::a[1]/@href"
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
 PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/text()[last()]"
@@ -22,7 +22,8 @@ def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
-    countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
+    # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
+    countries_urls = ["http://en.wikipedia.org/wiki/Tonga"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -67,7 +68,7 @@ def add_person_entities_to_graph(g, person_name, person_url):
     r = requests.get(person_url)
     doc = lxml.html.fromstring(r.content)
     add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHDATE_XPATH_QUERY, 'born_on')
-    add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHPLACE_XPATH_QUERY, 'born_in')
+    # TODO add after fix add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHPLACE_XPATH_QUERY, 'born_in')
 
 
 def add_person_entity_to_graph(g, doc, person_name, xpath_query, relation):
