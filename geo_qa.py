@@ -23,7 +23,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Fiji"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Republic_of_the_Congo"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -86,10 +86,18 @@ def ask_question(question):
     graph = rdflib.Graph()
     graph.parse(GRAPH_FILE_NAME, format="nt")
     raw_answer = graph.query(sparql_query)
-    parsed_list = [ans.x.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)]
-    answer = ', '.join(parsed_list)
-    if "area" in question:
-        answer += " km squared"
+    if "Who" in question and "president" not in question and "minister" not in question:
+        parsed_list = [ans.pre_c for ans in list(raw_answer)]
+        if parsed_list[0] != None:
+            answer = "President of " + parsed_list[0].split("/")[-1].replace('_', ' ')
+        parsed_list = [ans.pri_c for ans in list(raw_answer)]
+        if parsed_list[0] != None:
+            answer = "Prime minister of "  + parsed_list[0].split("/")[-1].replace('_', ' ')
+    else:
+        parsed_list = [ans.x.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)]
+        answer = ', '.join(parsed_list)
+        if "area" in question:
+            answer += " km squared"
     print(answer)
 
 
@@ -104,8 +112,8 @@ def parse_question_to_query(question):
             country_name = question.split("of_", 1)[-1][:-1]
             return generate_country_sparql_query(country_name, 'prime_minister_of')
         else:
-            # TODO: complete
-            pass
+            person_name = question.split("is_", 1)[-1][:-1]
+            return generate_who_is_person_sparql_query(person_name)
     elif question_word == "What":  # questions 3,4,5,6
         if "population" in question:
             country_name = question.split("of_", 1)[-1][:-1]
@@ -122,17 +130,17 @@ def parse_question_to_query(question):
     elif question_word == "When":  # questions 7,9
         if "president" in question:
             country_name = question.split("of_", 1)[-1][:-6]
-            return generate_person_sparql_query(country_name, 'born_on', 'president_of')
+            return generate_born_person_sparql_query(country_name, 'born_on', 'president_of')
         elif "minister" in question:
             country_name = question.split("of_", 1)[-1][:-6]
-            return generate_person_sparql_query(country_name, 'born_on', 'prime_minister_of')
+            return generate_born_person_sparql_query(country_name, 'born_on', 'prime_minister_of')
     elif question_word == "Where":  # questions 8,10
         if "president" in question:
             country_name = question.split("of_", 1)[-1][:-6]
-            return generate_person_sparql_query(country_name, 'born_in', 'president_of')
+            return generate_born_person_sparql_query(country_name, 'born_in', 'president_of')
         elif "minister" in question:
             country_name = question.split("of_", 1)[-1][:-6]
-            return generate_person_sparql_query(country_name, 'born_in', 'prime_minister_of')
+            return generate_born_person_sparql_query(country_name, 'born_in', 'prime_minister_of')
     elif question_word == "List":  # question 13
         substring = question.split("_")[-1]
         return generate_substring_sparql_query(substring)
@@ -154,11 +162,30 @@ def generate_country_sparql_query(country_name, relation):
             " }" 
 
 
-def generate_person_sparql_query(country_name, relation, relation_title):
+def generate_born_person_sparql_query(country_name, relation, relation_title):
     return "select ?x where " \
             "{ " \
             f"?p <{WIKI_PREFIX}/{relation_title}> <{WIKI_PREFIX}/{country_name}> ." \
             f"?p <{WIKI_PREFIX}/{relation}> ?x" \
+            " }"
+
+
+def generate_who_is_person_sparql_query(person_name):
+    return "select * where " \
+            "{ " \
+                "{ " \
+                    "select ?pre_c where " \
+                    "{ " \
+                    f"<{WIKI_PREFIX}/{person_name}> <{WIKI_PREFIX}/president_of> ?pre_c ." \
+                    " }" \
+                " }" \
+            "union" \
+                "{ " \
+                    "select ?pri_c where " \
+                    "{ " \
+                    f"<{WIKI_PREFIX}/{person_name}> <{WIKI_PREFIX}/prime_minister_of> ?pri_c ." \
+                    " }" \
+                " }" \
             " }"
 
 
