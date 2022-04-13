@@ -1,4 +1,5 @@
 import sys
+from urllib.parse import urlparse
 
 import requests
 import lxml.html
@@ -84,8 +85,9 @@ def ask_question(question):
     sparql_query = parse_question_to_query(question)
     graph = rdflib.Graph()
     graph.parse(GRAPH_FILE_NAME, format="nt")
-    answer = graph.query(sparql_query)
-    print(list(answer)[0])
+    raw_answer = graph.query(sparql_query)
+    answer = list(raw_answer)[0].p.split("/")[-1].replace('_', ' ')
+    print(answer)
 
 
 def parse_question_to_query(question):
