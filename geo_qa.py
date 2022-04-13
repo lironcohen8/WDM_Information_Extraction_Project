@@ -23,7 +23,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Argentina"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Bahrain"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
