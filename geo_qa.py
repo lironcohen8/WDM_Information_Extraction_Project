@@ -1,5 +1,4 @@
 import sys
-from urllib.parse import urlparse
 
 import requests
 import lxml.html
@@ -15,7 +14,7 @@ AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Ar
 GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'Government']/ancestor::tr/td//a/@href"
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Capital']/following::a[1]/@href"
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
-PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/text()[last()]"
+PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td//text()[last()]"
 
 
 def get_countries_urls():
@@ -23,7 +22,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Bahrain"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Uruguay"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -67,7 +66,7 @@ def add_person_entities_to_graph(g, person_name, person_url):
     r = requests.get(person_url)
     doc = lxml.html.fromstring(r.content)
     add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHDATE_XPATH_QUERY, 'born_on')
-    # TODO add after fix add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHPLACE_XPATH_QUERY, 'born_in')
+    add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHPLACE_XPATH_QUERY, 'born_in')
 
 
 def add_person_entity_to_graph(g, doc, person_name, xpath_query, relation):
