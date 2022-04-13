@@ -34,7 +34,7 @@ def create_graph():
 
 
 def add_entities_to_graph(g, countries_urls):
-    for country_url in countries_urls[:3]:
+    for country_url in countries_urls[:5]:
         country_name = country_url.split("/")[-1]
         print(country_name)
         r = requests.get(country_url)
@@ -51,11 +51,13 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
-        result_name = result_url.split("/")[-1].strip().split(" ")[0]
+        result_name = result_url.split("/")[-1].strip().split()[0]
+        #result_name = "_".join(result_name.split() )
+
         # TODO delete after debug print(result_name, "-", relation, "-", country_name)
-        g.add((rdflib.URIRef(result_name),
-               rdflib.URIRef(relation),
-               rdflib.URIRef(country_name)))
+        g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
+               rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
+               rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
         if relation in ['president_of', 'prime_minister_of']:
             add_person_entities_to_graph(g, result_name, f"{WIKI_PREFIX}{result_url}")
 
@@ -73,9 +75,9 @@ def add_person_entity_to_graph(g, doc, person_name, xpath_query, relation):
         result_url = query_result_list[0]
         result_name = result_url.split(" ")[-1].strip()
         # TODO delete after debug print(person_name, "-", relation, "-", result_name)
-        g.add((rdflib.URIRef(person_name),
-               rdflib.URIRef(relation),
-               rdflib.URIRef(result_name)))
+        g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
+               rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
+               rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}")))
 
 
 def ask_question(question):
@@ -83,7 +85,7 @@ def ask_question(question):
     graph = rdflib.Graph()
     graph.parse(GRAPH_FILE_NAME, format="nt")
     answer = graph.query(sparql_query)
-    print(answer)
+    print(list(answer)[0])
 
 
 def parse_question_to_query(question):
@@ -91,7 +93,7 @@ def parse_question_to_query(question):
     if question_word == "Who":  # questions 1,2,11
         if "president" in question:
             country_name = question.split("of ")[-1][:-1]
-            return generate_country_sparql_query(country_name, 'president_of')
+            return generate_country_sparql_query( country_name, "president_of")
         elif "minister" in question:
             country_name = question.split("of ")[-1][:-1]
             return generate_country_sparql_query(country_name, 'prime_minister_of')
@@ -139,23 +141,26 @@ def parse_question_to_query(question):
         
 
 def generate_country_sparql_query(country_name, relation):
-    return "select ?p " \
-            f"where ?p {relation} {country_name}"
+
+    return "select ?p where " \
+            "{ " \
+            f"?p <{WIKI_PREFIX}/{relation}> <{WIKI_PREFIX}/{country_name}>" \
+            " }" 
 
 
 def generate_person_sparql_query(country_name, relation, relation_title):
     return "select ?d where " \
-            "{" \
-            f"?p {relation_title} {country_name} ." \
-            f"?p {relation} ?d" \
-            "}"
+            "{ " \
+            f"?p <{WIKI_PREFIX}/{relation_title}> <{WIKI_PREFIX}/{country_name}> ." \
+            f"?p <{WIKI_PREFIX}/{relation}> ?d" \
+            " }"
 
 
 def generate_substring_sparql_query(substring):
     return "select ?n where " \
             "{" \
             "?n capital_of ?c ." \
-            f"filter contains(?c,{substring})" \
+            f"filter contains(?c,<{WIKI_PREFIX}/{substring}>)" \
             "}"
 
 
@@ -163,8 +168,8 @@ def generate_forms_sparql_query(form1, form2):
     return "select count(distinct ?c) where " \
             "{" \
             "?fs government_in ?c ." \
-            f"filter contains(?fs,{form1})" \
-            f"filter contains(?fs,{form2})" \
+            f"filter contains(?fs,<{WIKI_PREFIX}/{form1}>)" \
+            f"filter contains(?fs,<{WIKI_PREFIX}/{form2}>)" \
             "}"
 
 
@@ -172,7 +177,7 @@ def generate_born_count_sparql_query(country_name):
     return "select count(distinct ?p) where " \
             "{" \
             "?p president_of ?c ." \
-            f"?p born_in {country_name}" \
+            f"?p born_in <{WIKI_PREFIX}/{country_name}>" \
             "}"
 
 
