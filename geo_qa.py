@@ -23,7 +23,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Argentina"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Fiji"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -86,7 +86,7 @@ def ask_question(question):
     graph = rdflib.Graph()
     graph.parse(GRAPH_FILE_NAME, format="nt")
     raw_answer = graph.query(sparql_query)
-    parsed_list = [ans.p.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)]
+    parsed_list = [ans.x.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)]
     answer = ', '.join(parsed_list)
     if "area" in question:
         answer += " km squared"
@@ -148,42 +148,42 @@ def parse_question_to_query(question):
 
 def generate_country_sparql_query(country_name, relation):
 
-    return "select ?p where " \
+    return "select ?x where " \
             "{ " \
-            f"?p <{WIKI_PREFIX}/{relation}> <{WIKI_PREFIX}/{country_name}>" \
+            f"?x <{WIKI_PREFIX}/{relation}> <{WIKI_PREFIX}/{country_name}>" \
             " }" 
 
 
 def generate_person_sparql_query(country_name, relation, relation_title):
-    return "select ?d where " \
+    return "select ?x where " \
             "{ " \
             f"?p <{WIKI_PREFIX}/{relation_title}> <{WIKI_PREFIX}/{country_name}> ." \
-            f"?p <{WIKI_PREFIX}/{relation}> ?d" \
+            f"?p <{WIKI_PREFIX}/{relation}> ?x" \
             " }"
 
 
 def generate_substring_sparql_query(substring):
-    return "select ?n where " \
+    return "select ?x where " \
             "{" \
-            "?n capital_of ?c ." \
+            "?x capital_of ?c ." \
             f"filter contains(?c,<{WIKI_PREFIX}/{substring}>)" \
             "}"
 
 
 def generate_forms_sparql_query(form1, form2):
-    return "select count(distinct ?c) where " \
+    return "select count(distinct ?x) where " \
             "{" \
-            "?fs government_in ?c ." \
+            "?fs government_in ?x ." \
             f"filter contains(?fs,<{WIKI_PREFIX}/{form1}>)" \
             f"filter contains(?fs,<{WIKI_PREFIX}/{form2}>)" \
             "}"
 
 
 def generate_born_count_sparql_query(country_name):
-    return "select count(distinct ?p) where " \
+    return "select count(distinct ?x) where " \
             "{" \
-            "?p president_of ?c ." \
-            f"?p born_in <{WIKI_PREFIX}/{country_name}>" \
+            "?x president_of ?c ." \
+            f"?x born_in <{WIKI_PREFIX}/{country_name}>" \
             "}"
 
 
