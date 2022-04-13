@@ -35,7 +35,7 @@ def create_graph():
 
 
 def add_entities_to_graph(g, countries_urls):
-    for country_url in countries_urls[:5]:
+    for country_url in countries_urls:
         country_name = country_url.split("/")[-1]
         print(country_name)
         r = requests.get(country_url)
