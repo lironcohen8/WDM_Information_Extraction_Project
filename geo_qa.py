@@ -23,7 +23,7 @@ def get_countries_urls():
     doc = lxml.html.fromstring(r.content)
     countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
     # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Israel"]
+    countries_urls = ["http://en.wikipedia.org/wiki/Argentina"]
     return countries_urls
     # TODO: Add Western Sahara (170) and Channel Islands (190)
 
@@ -95,7 +95,7 @@ def ask_question(question):
         if parsed_list[0] != None:
             answer = "Prime minister of "  + parsed_list[0].split("/")[-1].replace('_', ' ')
     else:
-        parsed_list = [ans.x.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)]
+        parsed_list = sorted([ans.x.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)])
         answer = ', '.join(parsed_list)
         if "area" in question:
             answer += " km squared"
@@ -215,8 +215,6 @@ def generate_born_count_sparql_query(country_name):
             "}"
 
 
-# TODO: Add squared in answer of area
-# TODO: Add comma separating in answer in government
 # TODO: Add encodings to fix president of Mexico for example
 # TODO: Check Russia values
 # TODO: fix birth place query
