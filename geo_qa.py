@@ -198,18 +198,19 @@ def generate_substring_sparql_query(substring):
 
 
 def generate_forms_sparql_query(form1, form2):
-    return "select (count(distinct ?c) as ?x) where " \
-            "{" \
-            "?f <{WIKI_PREFIX}/government_in> ?c ." \
-            f"filter contains(lcase(str(?f)),lcase('{form1}'))" \
-            f"filter contains(lcase(str(?f)),lcase('{form2}'))" \
-            "}"
+    return "select ?x where " \
+            "{ " \
+            f"?f1 <{WIKI_PREFIX}/government_in> ?x . " \
+            f"?f2 <{WIKI_PREFIX}/government_in> ?x . " \
+            f"filter (contains(lcase(str(?f1)),lcase('{form1}')) " \
+            f"&& contains(lcase(str(?f2)),lcase('{form2}')))" \
+            " }"
 
 
 def generate_born_count_sparql_query(country_name):
     return "select (count(distinct ?p) as ?x) where " \
             "{" \
-            "?p <{WIKI_PREFIX}/president_of> ?c ." \
+            f"?p <{WIKI_PREFIX}/president_of> ?c ." \
             f"?p born_in <{WIKI_PREFIX}/{country_name}>" \
             "}"
 
