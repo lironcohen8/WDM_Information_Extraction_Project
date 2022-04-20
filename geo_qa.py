@@ -1,4 +1,5 @@
 import sys
+from pytz import country_names
 
 import requests
 import lxml.html
@@ -7,6 +8,10 @@ import rdflib
 WIKI_PREFIX = "http://en.wikipedia.org"
 GRAPH_FILE_NAME = "ontology.nt"
 LIST_OF_COUNTRIES_URL = "https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)"
+COUTNRIES_XPATH_QUERY = "//tr/td[1]/span[1]/a/@href"
+CANARY_ISLANDS_XPATH_QUERY = "//tr/td//a[@title = 'Channel Islands']/@href"
+WESTERN_SAHARA_XPATH_QUERY = "//tr/td//a[@title = 'Western Sahara']/@href"
+AFGHANISTAN_XPATH_QUERY = "//tr/td//a[@title = 'Afghanistan']/@href"
 PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'President']/ancestor::tr/td//a/@href"
 PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')]//a[text() = 'Prime Minister']/ancestor::tr/td//a/@href"
 POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Population')]/following::tr[1]/td/text()[1]"
@@ -19,11 +24,13 @@ PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text()
 def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
     doc = lxml.html.fromstring(r.content)
-    countries_relative_urls = doc.xpath("//tr/td[1]/span[1]/a/@href")
-    # TODO return after checks countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Uruguay"]
+    countries_relative_urls = doc.xpath(COUTNRIES_XPATH_QUERY)
+    countries_relative_urls.insert(CANARY_ISLANDS_XPATH_QUERY)
+    countries_relative_urls.insert(WESTERN_SAHARA_XPATH_QUERY)
+    countries_relative_urls.insert(AFGHANISTAN_XPATH_QUERY)
+    countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
+    #TODO for tests countries_urls = ["http://en.wikipedia.org/wiki/Uruguay"]
     return countries_urls
-    # TODO: Add Western Sahara (170) and Channel Islands (190)
 
 
 def create_graph():
@@ -229,11 +236,12 @@ def generate_born_count_sparql_query(country_name):
 
 # TODO: Add encodings to fix president of Mexico for example
 # TODO: Ask about substrings that are included in Wiki prefix
-# TODO: Check Russia values
-# TODO: Check Isle Of Man capital
 # TODO: fix birth place query
-# TODO: Add new question
 # TODO: Check on NOVA
+
+# TODO: Edge cases: DO NOT DELETE THESE TODOS
+# Add Western Sahara (170) and Channel Islands (190) and afghanistan 
+# TODO: Check Russia values
 
 
 if __name__ == '__main__':
