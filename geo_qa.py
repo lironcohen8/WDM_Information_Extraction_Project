@@ -16,7 +16,6 @@ CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Capita
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
 PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td//text()[last()]"
 
-
 def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
     doc = lxml.html.fromstring(r.content)
@@ -142,8 +141,12 @@ def parse_question_to_query(question):
             country_name = question.split("of_", 1)[-1][:-6]
             return generate_born_person_sparql_query(country_name, 'born_in', 'prime_minister_of')
     elif question_word == "List":  # question 13
-        substring = question.split("_")[-1]
-        return generate_substring_sparql_query(substring)
+        if "contains" in question:
+            substring = question.split("_")[-1]
+            return generate_substring_sparql_query(substring)
+        else: # our question: List all countries that their names and their capitals' names end with the string <str>
+            substring = question.split("_")[-1]
+            return generate_country_capital_ends_sparql_query(substring)
     else:  # questions 12,14
         if "are_also" in question:
             form1 = question.split("many_", 1)[-1].split("_are", 1)[0]
@@ -197,6 +200,15 @@ def generate_substring_sparql_query(substring):
             "}"
 
 
+def generate_country_capital_ends_sparql_query(end_string):
+    return "select ?x where " \
+            "{" \
+            f"?c <{WIKI_PREFIX}/capital_of> ?x " \
+            f"filter (strEnds(lcase(str(?c)),lcase('{end_string}')) " \
+            f"&& strEnds(lcase(str(?x)),lcase('{end_string}')))" \
+            " }"
+
+
 def generate_forms_sparql_query(form1, form2):
     return "select ?x where " \
             "{ " \
@@ -218,6 +230,7 @@ def generate_born_count_sparql_query(country_name):
 # TODO: Add encodings to fix president of Mexico for example
 # TODO: Ask about substrings that are included in Wiki prefix
 # TODO: Check Russia values
+# TODO: Check Isle Of Man capital
 # TODO: fix birth place query
 # TODO: Add new question
 # TODO: Check on NOVA
