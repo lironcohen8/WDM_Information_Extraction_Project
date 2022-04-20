@@ -12,24 +12,24 @@ COUTNRIES_XPATH_QUERY = "//tr/td[1]/span[1]/a/@href"
 CANARY_ISLANDS_XPATH_QUERY = "//tr/td//a[@title = 'Channel Islands']/@href"
 WESTERN_SAHARA_XPATH_QUERY = "//tr/td//a[@title = 'Western Sahara']/@href"
 AFGHANISTAN_XPATH_QUERY = "//tr/td//a[@title = 'Afghanistan']/@href"
-PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'President']/ancestor::tr/td//a/@href"
-PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')]//a[text() = 'Prime Minister']/ancestor::tr/td//a/@href"
-POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Population')]/following::tr[1]/td/text()[1]"
-AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
-GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')]//a[text() = 'Government']/ancestor::tr/td//a/@href"
-CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Capital']/following::a[1]/@href"
-PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
-PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td//text()[last()]"
+PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'President']/ancestor::tr/td//a/@href"
+PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//a[text() = 'Prime Minister']/ancestor::tr/td//a/@href"
+POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td/text()[1]"
+AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
+GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'Government']/ancestor::tr/td//a/@href"
+CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Capital']/following::a[1]/@href"
+PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
+PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//td//text()[last()]"
 
 def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
     doc = lxml.html.fromstring(r.content)
-    countries_relative_urls = doc.xpath(COUTNRIES_XPATH_QUERY)
-    countries_relative_urls.insert(CANARY_ISLANDS_XPATH_QUERY)
-    countries_relative_urls.insert(WESTERN_SAHARA_XPATH_QUERY)
-    countries_relative_urls.insert(AFGHANISTAN_XPATH_QUERY)
-    countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    #TODO for tests countries_urls = ["http://en.wikipedia.org/wiki/Uruguay"]
+    # countries_relative_urls = doc.xpath(COUTNRIES_XPATH_QUERY)
+    # countries_relative_urls.insert(CANARY_ISLANDS_XPATH_QUERY)
+    # countries_relative_urls.insert(WESTERN_SAHARA_XPATH_QUERY)
+    # countries_relative_urls.insert(AFGHANISTAN_XPATH_QUERY)
+    # countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
+    countries_urls = ["http://en.wikipedia.org/wiki/Hungary"]
     return countries_urls
 
 
@@ -241,7 +241,8 @@ def generate_born_count_sparql_query(country_name):
 
 # TODO: Edge cases: DO NOT DELETE THESE TODOS
 # Add Western Sahara (170) and Channel Islands (190) and afghanistan 
-# TODO: Check Russia values
+# infobox[1] because hungary had more than 1 infobox
+# split by of was wrong in president of isle of man, added 1
 
 
 if __name__ == '__main__':
