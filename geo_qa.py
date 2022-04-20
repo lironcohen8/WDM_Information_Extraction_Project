@@ -9,7 +9,7 @@ WIKI_PREFIX = "http://en.wikipedia.org"
 GRAPH_FILE_NAME = "ontology.nt"
 LIST_OF_COUNTRIES_URL = "https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)"
 COUTNRIES_XPATH_QUERY = "//tr/td[1]/span[1]/a/@href"
-CANARY_ISLANDS_XPATH_QUERY = "//tr/td//a[@title = 'Channel Islands']/@href"
+CHANNEL_ISLANDS_XPATH_QUERY = "//tr/td//a[@title = 'Channel Islands']/@href"
 WESTERN_SAHARA_XPATH_QUERY = "//tr/td//a[@title = 'Western Sahara']/@href"
 AFGHANISTAN_XPATH_QUERY = "//tr/td//a[@title = 'Afghanistan']/@href"
 PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'President']/ancestor::tr/td//a/@href"
@@ -24,12 +24,12 @@ PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[tex
 def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
     doc = lxml.html.fromstring(r.content)
-    # countries_relative_urls = doc.xpath(COUTNRIES_XPATH_QUERY)
-    # countries_relative_urls.insert(CANARY_ISLANDS_XPATH_QUERY)
-    # countries_relative_urls.insert(WESTERN_SAHARA_XPATH_QUERY)
-    # countries_relative_urls.insert(AFGHANISTAN_XPATH_QUERY)
-    # countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["http://en.wikipedia.org/wiki/Hungary"]
+    countries_relative_urls = doc.xpath(COUTNRIES_XPATH_QUERY)
+    countries_relative_urls.insert(189, doc.xpath(CHANNEL_ISLANDS_XPATH_QUERY)[0])
+    countries_relative_urls.insert(169, doc.xpath(WESTERN_SAHARA_XPATH_QUERY)[0])
+    countries_relative_urls.insert(36, doc.xpath(AFGHANISTAN_XPATH_QUERY)[0])
+    countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
+    #TODO checks countries_urls = ["http://en.wikipedia.org/wiki/Hungary"]
     return countries_urls
 
 
@@ -41,7 +41,7 @@ def create_graph():
 
 
 def add_entities_to_graph(g, countries_urls):
-    for country_url in countries_urls:
+    for country_url in countries_urls[35:40]:
         country_name = country_url.split("/")[-1]
         print(country_name)
         r = requests.get(country_url)
@@ -240,7 +240,7 @@ def generate_born_count_sparql_query(country_name):
 # TODO: Check on NOVA
 
 # TODO: Edge cases: DO NOT DELETE THESE TODOS
-# Add Western Sahara (170) and Channel Islands (190) and afghanistan 
+# Add Western Sahara (170) and Channel Islands (190) and afghanistan
 # infobox[1] because hungary had more than 1 infobox
 # split by of was wrong in president of isle of man, added 1
 
