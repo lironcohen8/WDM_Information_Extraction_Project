@@ -102,7 +102,7 @@ def ask_question(question):
 
 
 def parse_question_to_query(question):
-    question = question.replace(' ', '_')
+    question = '_'.join(question.split())
     question_word = question.split('_')[0]
     if question_word == "Who":  # questions 1,2,11
         if "president" in question:
@@ -145,7 +145,7 @@ def parse_question_to_query(question):
         substring = question.split("_")[-1]
         return generate_substring_sparql_query(substring)
     else:  # questions 12,14
-        if "are also" in question:
+        if "are_also" in question:
             form1 = question.split("many_", 1)[-1].split("_are", 1)[0]
             form2 = question.split("also_", 1)[-1][:-1]
             return generate_forms_sparql_query(form1, form2)
@@ -192,29 +192,30 @@ def generate_who_is_person_sparql_query(person_name):
 def generate_substring_sparql_query(substring):
     return "select ?x where " \
             "{" \
-            "?x capital_of ?c ." \
-            f"filter contains(?c,<{WIKI_PREFIX}/{substring}>)" \
+            f"?c <{WIKI_PREFIX}/capital_of> ?x " \
+            f"filter contains(lcase(str(?c)),lcase('{substring}'))" \
             "}"
 
 
 def generate_forms_sparql_query(form1, form2):
-    return "select count(distinct ?x) where " \
+    return "select (count(distinct ?c) as ?x) where " \
             "{" \
-            "?fs government_in ?x ." \
-            f"filter contains(?fs,<{WIKI_PREFIX}/{form1}>)" \
-            f"filter contains(?fs,<{WIKI_PREFIX}/{form2}>)" \
+            "?f <{WIKI_PREFIX}/government_in> ?c ." \
+            f"filter contains(lcase(str(?f)),lcase('{form1}'))" \
+            f"filter contains(lcase(str(?f)),lcase('{form2}'))" \
             "}"
 
 
 def generate_born_count_sparql_query(country_name):
-    return "select count(distinct ?x) where " \
+    return "select (count(distinct ?p) as ?x) where " \
             "{" \
-            "?x president_of ?c ." \
-            f"?x born_in <{WIKI_PREFIX}/{country_name}>" \
+            "?p <{WIKI_PREFIX}/president_of> ?c ." \
+            f"?p born_in <{WIKI_PREFIX}/{country_name}>" \
             "}"
 
 
 # TODO: Add encodings to fix president of Mexico for example
+# TODO: Ask about substrings that are included in Wiki prefix
 # TODO: Check Russia values
 # TODO: fix birth place query
 # TODO: Add new question
