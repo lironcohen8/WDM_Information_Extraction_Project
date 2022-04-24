@@ -20,6 +20,8 @@ GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'G
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Capital']/following::a[1]/@href"
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
 PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//td//text()[last()]"
+#//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/a[last()]
+#//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/text()[last()]
 
 def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
