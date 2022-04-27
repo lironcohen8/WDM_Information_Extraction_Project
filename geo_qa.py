@@ -12,11 +12,12 @@ COUTNRIES_XPATH_QUERY = "//tr/td[1]/span[1]/a/@href"
 CHANNEL_ISLANDS_XPATH_QUERY = "//tr/td//a[@title = 'Channel Islands']/@href"
 WESTERN_SAHARA_XPATH_QUERY = "//tr/td//a[@title = 'Western Sahara']/@href"
 AFGHANISTAN_XPATH_QUERY = "//tr/td//a[@title = 'Afghanistan']/@href"
-PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'President']/ancestor::tr/td//a/@href"
-PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//a[text() = 'Prime Minister']/ancestor::tr/td//a/@href"
+PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'President']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
+PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//a[text() = 'Prime Minister']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
 POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td/text()[1]"
+POPULATION_SPECIAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td/span/text()"
 AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
-GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'Government']/ancestor::tr/td//a/@href"
+GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'Government']/ancestor::tr/td//a[contains(@href, 'wiki')]/@href"
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Capital']/following::a[1]/@href"
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
 #PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//td//text()[last()]"
@@ -48,12 +49,15 @@ def add_entities_to_graph(g, countries_urls):
         print(country_name)
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
-        add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
-        add_country_entity_to_graph(g, doc, country_name, PRIME_MINISTER_XPATH_QUERY, 'prime_minister_of')
-        add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
-        add_country_entity_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
-        add_country_entity_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
-        add_country_entity_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
+        # add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
+        # add_country_entity_to_graph(g, doc, country_name, PRIME_MINISTER_XPATH_QUERY, 'prime_minister_of')
+        # add_country_entity_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
+        # add_country_entity_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
+        # add_country_entity_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
+        if (country_name in ("Belarus", "Dominican_Republic", "Malta", "Russia")):
+            add_country_entity_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
+        else:
+            add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
 
 
 def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
