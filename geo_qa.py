@@ -19,9 +19,9 @@ AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 
 GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'Government']/ancestor::tr/td//a/@href"
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Capital']/following::a[1]/@href"
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
-PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//td//text()[last()]"
-#//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/a[last()]
-#//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/text()[last()]
+#PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//td//text()[last()]"
+PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/a[last()]/text()"
+#PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/text()[last()]"
 
 def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
@@ -81,7 +81,7 @@ def add_person_entity_to_graph(g, doc, person_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
-        result_name = result_url.split(" ")[-1].strip()
+        result_name = result_url.split()[-1].strip()
         # TODO delete after debug print(person_name, "-", relation, "-", result_name)
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
