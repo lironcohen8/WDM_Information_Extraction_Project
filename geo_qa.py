@@ -14,7 +14,7 @@ WESTERN_SAHARA_XPATH_QUERY = "//tr/td//a[@title = 'Western Sahara']/@href"
 AFGHANISTAN_XPATH_QUERY = "//tr/td//a[@title = 'Afghanistan']/@href"
 PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'President']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
 PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//a[text() = 'Prime Minister']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
-POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td/text()[1]"
+POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td[1]/text()[1]"
 POPULATION_SPECIAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td/span/text()"
 AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
 GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'Government']/ancestor::tr/td//a[contains(@href, 'wiki')]/@href"
@@ -49,29 +49,40 @@ def add_entities_to_graph(g, countries_urls):
         print(country_name)
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
-        # add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
+        add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
         # add_country_entity_to_graph(g, doc, country_name, PRIME_MINISTER_XPATH_QUERY, 'prime_minister_of')
         # add_country_entity_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
         # add_country_entity_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
         # add_country_entity_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
-        if (country_name in ("Belarus", "Dominican_Republic", "Malta", "Russia")):
-            add_country_entity_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
-        else:
-            add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
+        # if (country_name in ("Belarus", "Dominican_Republic", "Malta", "Russia")):
+        #     add_country_entity_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
+        # else:
+        #     add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
 
 
 def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
-    for result_url in query_result_list:
-        result_name = result_url.split("/")[-1].strip().split()[0]
+    if len(query_result_list) == 0:
+        return
+    if relation == 'goverment_in':
+        for result_url in query_result_list:
+            result_name = result_url.split("/")[-1].strip().split()[0]
+            #result_name = "_".join(result_name.split() )
+
+            # TODO delete after debug print(result_name, "-", relation, "-", country_name)
+            g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
+                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
+                rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
+    else:
+        result_name = query_result_list[0].split("/")[-1].strip().split()[0]
         #result_name = "_".join(result_name.split() )
 
         # TODO delete after debug print(result_name, "-", relation, "-", country_name)
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
-               rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
-               rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
-        if relation in ['president_of', 'prime_minister_of']:
-            add_person_entities_to_graph(g, result_name, f"{WIKI_PREFIX}{result_url}")
+            rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
+            rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
+        # if relation in ['president_of', 'prime_minister_of']:
+        #     add_person_entities_to_graph(g, result_name, f"{WIKI_PREFIX}{result_url}")
 
 
 def add_person_entities_to_graph(g, person_name, person_url):
