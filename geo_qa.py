@@ -49,15 +49,15 @@ def add_entities_to_graph(g, countries_urls):
         print(country_name)
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
-        # add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
+        add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
         add_country_entity_to_graph(g, doc, country_name, PRIME_MINISTER_XPATH_QUERY, 'prime_minister_of')
-        # add_country_entity_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
-        # add_country_entity_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
-        # add_country_entity_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
-        # if (country_name in ("Belarus", "Dominican_Republic", "Malta", "Russia")):
-        #     add_country_entity_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
-        # else:
-        #     add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
+        add_country_entity_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
+        add_country_entity_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
+        add_country_entity_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
+        if (country_name in ("Belarus", "Dominican_Republic", "Malta", "Russia")):
+            add_country_entity_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
+        else:
+            add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
 
 
 def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
@@ -70,18 +70,18 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
             #result_name = "_".join(result_name.split() )
 
             # TODO delete after debug print(result_name, "-", relation, "-", country_name)
-            # g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
-            #     rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
-            #     rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
+            g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
+                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
+                rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
     else:
         result_url = query_result_list[0]
         result_name = result_url.split("/")[-1].strip().split()[0]
         #result_name = "_".join(result_name.split() )
 
         # TODO delete after debug print(result_name, "-", relation, "-", country_name)
-        # g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
-        #     rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
-        #     rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
+        g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
+            rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
+            rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
         if relation in ['president_of', 'prime_minister_of']:
              add_person_entities_to_graph(g, result_name, f"{WIKI_PREFIX}{result_url}")
 
@@ -90,7 +90,7 @@ def add_person_entities_to_graph(g, person_name, person_url):
     r = requests.get(person_url)
     doc = lxml.html.fromstring(r.content)
     add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHDATE_XPATH_QUERY, 'born_on')
-    # add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHPLACE_XPATH_QUERY, 'born_in')
+    add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHPLACE_XPATH_QUERY, 'born_in')
 
 
 def add_person_entity_to_graph(g, doc, person_name, xpath_query, relation):
