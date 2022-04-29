@@ -1,6 +1,4 @@
 import sys
-from pytz import country_names
-
 import requests
 import lxml.html
 import rdflib
@@ -12,17 +10,17 @@ COUTNRIES_XPATH_QUERY = "//tr/td[1]/span[1]/a/@href"
 CHANNEL_ISLANDS_XPATH_QUERY = "//tr/td//a[@title = 'Channel Islands']/@href"
 WESTERN_SAHARA_XPATH_QUERY = "//tr/td//a[@title = 'Western Sahara']/@href"
 AFGHANISTAN_XPATH_QUERY = "//tr/td//a[@title = 'Afghanistan']/@href"
-PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'President']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
-PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//a[text() = 'Prime Minister']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
-POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td[1]/text()[1]"
-POPULATION_SPECIAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Population')]/following::tr[1]/td/span/text()"
-AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
-GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//a[text() = 'Government']/ancestor::tr/td//a[contains(@href, 'wiki')]/@href"
-CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Capital']/following::a[1]/@href"
-PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
-#PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//th[text() = 'Born']/parent::tr//td//text()[last()]"
-PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/a[last()]/text()"
-#PERSON_BIRTHPLACE_XPATH_QUERY = "//table[contains(@class, 'infobox')]//th[text() = 'Born']/parent::tr//td/text()[last()]"
+PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'President']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
+PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//*[text() = 'Prime Minister']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
+POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Population')]/following::tr[1]/td[1]/text()[1]"
+POPULATION_SPECIAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Population')]/following::tr[1]/td/span/text()"
+AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
+GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Government']/ancestor::tr/td//a[contains(@href, 'wiki')]/@href"
+CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Capital']/following::a[1]/@href"
+PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
+PERSON_BIRTHPLACE_XPATH_QUERY_A = "//table[contains(@class, 'infobox')]//*[text() = 'Born']/parent::tr//td/a[last()]/@href"
+PERSON_BIRTHPLACE_XPATH_QUERY_TEXT = "//table[contains(@class, 'infobox')]//*[text() = 'Born']/parent::tr//td/text()[last()]"
+countriesSet = set()
 
 def get_countries_urls():
     r = requests.get(LIST_OF_COUNTRIES_URL)
@@ -32,7 +30,7 @@ def get_countries_urls():
     countries_relative_urls.insert(169, doc.xpath(WESTERN_SAHARA_XPATH_QUERY)[0])
     countries_relative_urls.insert(36, doc.xpath(AFGHANISTAN_XPATH_QUERY)[0])
     countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    #TODO checks countries_urls = ["http://en.wikipedia.org/wiki/Hungary"]
+    # countries_urls = ["https://en.wikipedia.org/wiki/Indonesia"]
     return countries_urls
 
 
@@ -40,12 +38,13 @@ def create_graph():
     graph = rdflib.Graph()
     countries_urls = get_countries_urls()
     add_entities_to_graph(graph, countries_urls)
-    graph.serialize(GRAPH_FILE_NAME, format="nt")
+    graph.serialize(GRAPH_FILE_NAME, format="nt", encoding="utf-8", errors="ignore")
 
 
 def add_entities_to_graph(g, countries_urls):
     for country_url in countries_urls:
         country_name = country_url.split("/")[-1]
+        countriesSet.add(country_name)
         print(country_name)
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
@@ -64,9 +63,9 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
     if len(query_result_list) == 0:
         return
-    if relation == 'goverment_in':
+    if relation == 'government_in':
         for result_url in query_result_list:
-            result_name = result_url.split("/")[-1].strip().split()[0]
+            result_name = result_url.split("/")[-1].strip() #removed split()[0]
             #result_name = "_".join(result_name.split() )
 
             # TODO delete after debug print(result_name, "-", relation, "-", country_name)
@@ -89,20 +88,36 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
 def add_person_entities_to_graph(g, person_name, person_url):
     r = requests.get(person_url)
     doc = lxml.html.fromstring(r.content)
-    add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHDATE_XPATH_QUERY, 'born_on')
-    add_person_entity_to_graph(g, doc, person_name, PERSON_BIRTHPLACE_XPATH_QUERY, 'born_in')
+    add_person_bday_entity_to_graph(g, doc, person_name, PERSON_BIRTHDATE_XPATH_QUERY, 'born_on')
+    add_person_bplace_entity_to_graph(g, doc, person_name, 'born_in')
 
 
-def add_person_entity_to_graph(g, doc, person_name, xpath_query, relation):
+def add_person_bplace_entity_to_graph(g, doc, person_name, relation):
+    query_result_list = doc.xpath(PERSON_BIRTHPLACE_XPATH_QUERY_A)
+    if len(query_result_list) > 0:
+        result_url = query_result_list[0]
+        result_name = result_url.split("/")[-1].strip()
+        if result_name not in countriesSet:
+            query_result_list = doc.xpath(PERSON_BIRTHPLACE_XPATH_QUERY_TEXT)
+            if len(query_result_list) > 0:
+                result_url = query_result_list[0]
+                result_name = result_url.replace(',','').strip().replace(' ','_')
+                if result_name not in countriesSet:
+                    return
+        g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
+                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
+                rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}")))
+
+
+def add_person_bday_entity_to_graph(g, doc, person_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
-        result_name = result_url.split()[-1].strip()
+        result_name = result_url
         # TODO delete after debug print(person_name, "-", relation, "-", result_name)
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}")))
-
 
 def ask_question(question):
     sparql_query = parse_question_to_query(question)
@@ -235,20 +250,19 @@ def generate_country_capital_ends_sparql_query(end_string):
 
 
 def generate_forms_sparql_query(form1, form2):
-    return "select ?x where " \
+    return "select ?c (count(distinct ?c) as ?x) where " \
             "{ " \
-            f"?f1 <{WIKI_PREFIX}/government_in> ?x . " \
-            f"?f2 <{WIKI_PREFIX}/government_in> ?x . " \
-            f"filter (contains(lcase(str(?f1)),lcase('{form1}')) " \
-            f"&& contains(lcase(str(?f2)),lcase('{form2}')))" \
+                f"?f1 <{WIKI_PREFIX}/government_in> ?c . " \
+                f"?f2 <{WIKI_PREFIX}/government_in> ?c . " \
+                f"filter (strEnds(str(?f1),'/{form1}') " \
+                f"&& strEnds(str(?f2),'/{form2}'))" \
             " }"
 
-
 def generate_born_count_sparql_query(country_name):
-    return "select (count(distinct ?p) as ?x) where " \
+    return "select ?p (count(distinct ?p) as ?x) where " \
             "{" \
-            f"?p <{WIKI_PREFIX}/president_of> ?c ." \
-            f"?p born_in <{WIKI_PREFIX}/{country_name}>" \
+            f"?p <{WIKI_PREFIX}/president_of> ?c . " \
+            f"?p <{WIKI_PREFIX}/born_in> <{WIKI_PREFIX}/{country_name}> " \
             "}"
 
 
