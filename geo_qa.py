@@ -18,8 +18,8 @@ AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 
 GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Government']/ancestor::tr/td//a[contains(@href, 'wiki')]/@href"
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Capital']/following::a[1]/@href"
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
-PERSON_BIRTHPLACE_XPATH_QUERY_A = "//table[contains(@class, 'infobox')]//*[text() = 'Born']/parent::tr//td/a[last()]/@href"
-PERSON_BIRTHPLACE_XPATH_QUERY_TEXT = "//table[contains(@class, 'infobox')]//*[text() = 'Born']/parent::tr//td/text()[last()]"
+PERSON_BIRTHPLACE_XPATH_QUERY_A = "//table[contains(@class, 'infobox')][1]//*[text() = 'Born']/parent::tr//td/a[last()]/@href"
+PERSON_BIRTHPLACE_XPATH_QUERY_TEXT = "//table[contains(@class, 'infobox')][1]//*[text() = 'Born']/parent::tr//td/text()[last()]"
 countriesSet = set()
 
 def get_countries_urls():
