@@ -61,11 +61,15 @@ if __name__ == '__main__':
     print("Constitutional monarchy, Parliamentary system, Unitary state")
     os.system('python geo_qa.py question "What is the form of government in Sweden?"')
 
+    print("\nquestion 14:What is the form of government in Bahrain?")
+    print("Parliamentary, Semi-constitutional monarchy, Unitary state")
+    os.system('python geo_qa.py question "What is the form of government in Bahrain?"')
+
     print("\nquestion 15:What is the form of government in North Macedonia?")
     print("Parliamentary republic, Unitary state")
     os.system('python geo_qa.py question "What is the form of government in North Macedonia?"')
 
-    print("\nquestion 1:What is the capital of Burundi?")
+    print("\nquestion 16:What is the capital of Burundi?")
     print("Gitega")
     os.system('python geo_qa.py question "What is the capital of Burundi?"')
 
@@ -85,37 +89,77 @@ if __name__ == '__main__':
     print("Nuuk")
     os.system('python geo_qa.py question "What is the capital of Greenland?"')
 
-    print("\nquestion 20:List all countries whose capital name contains the string hi")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 21:List all countries whose capital name contains the string hi")
+    print("Bhutan, India, Moldova,  Sint Maarten,  United States")
+    os.system('python geo_qa.py question "List all countries whose capital name contains the string hi"')
 
-    print("\nquestion 20:What is the capital of Greenland?")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 22:List all countries whose capital name contains the string free")
+    print(" Sierra leone")
+    os.system('python geo_qa.py question "List all countries whose capital name contains the string free"')
     
-    print("\nquestion 20:What is the capital of Greenland?")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 23:List all countries whose capital name contains the string alo")
+    print(" Niue, Tonga")
+    os.system('python geo_qa.py question "List all countries whose capital name contains the string alo"')
     
-    print("\nquestion 20:What is the capital of Greenland?")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 24:List all countries whose capital name contains the string baba")
+    print(" Eswatini, Ethiopia")
+    os.system('python geo_qa.py question "List all countries whose capital name contains the string baba"')
     
-    print("\nquestion 20:What is the capital of Greenland?")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 25:How many  Absolute monarchy are also Unitary state?")
+    print("vatican city, brunei, saudi arabia, eswatini, oman")
+    # print("5")
+    os.system('python geo_qa.py question "How many  Absolute monarchy are also Unitary state?"')
     
-    print("\nquestion 20:What is the capital of Greenland?")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 26:How many Dictatorship are also Presidential system?")
+    print("equatorial guinea, djibouti, belarus, rwanda, tajikistan")
+    # print("5")
+    os.system('python geo_qa.py question "How many Dictatorship are also Presidential system?"')
     
-    print("\nquestion 20:What is the capital of Greenland?")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 27:How many Dictatorship are also Authoritarian?")
+    print("equatorial guinea, djibouti, rwanda")
+    # print("3")
+    os.system('python geo_qa.py question "How many Dictatorship are also Authoritarian?"')
     
-    print("\nquestion 20:What is the capital of Greenland?")
-    print("Nuuk")
-    os.system('python geo_qa.py question "What is the capital of Greenland?"')
+    print("\nquestion 28:How many presidents were born in Iceland? ")
+    print("1")
+    os.system('python geo_qa.py question "How many presidents were born in Iceland? "')
+
+    print("\nquestion 29:How many presidents were born in Republic of Ireland? ")
+    print("1")
+    os.system('python geo_qa.py question "How many presidents were born in Republic of Ireland? "')
+
+
+    print("\nquestion 30:When was the president of Fiji born?")
+    print("1964-04-20")
+    os.system('python geo_qa.py question "When was the president of Fiji born?"')
+
+    print("\nquestion 31:When was the president of United States born?")
+    print("1942-11-20")
+    os.system('python geo_qa.py question "When was the president of United States born?"')
+
+    print("\nquestion 32:Where was the president of Indonesia born?")
+    print("Indonesia")
+    os.system('python geo_qa.py question "Where was the president of Indonesia born?"')
+
+    print("\nquestion 33:Where was the president of Uruguay born?")
+    print("Uruguay")
+    os.system('python geo_qa.py question "Where was the president of Uruguay born?"')
+
+    print("\nquestion 34:Where was the prime minister of Solomon Islands born?")
+    print("Papua New Guinea")
+    os.system('python geo_qa.py question "Where was the prime minister of Solomon Islands born?"')
+
+    print("\nquestion 35:When was the prime minister of Lesotho born?")
+    print("1961-11-03")
+    os.system('python geo_qa.py question "When was the prime minister of Lesotho born?"')
+
+    print("\nquestion 36:Who is Denis Sassou Nguesso?")
+    print("President of Republic of the Congo")
+    os.system('python geo_qa.py question "Who is Denis Sassou Nguesso?"')
+
+    print("\nquestion 37:Who is David Kabua?")
+    print("President of Marshall Islands")
+    os.system('python geo_qa.py question "Who is David Kabua?"')
 
     # print("question 1: who is the president of Italy?")
     # os.system('python geo_qa.py question "who is the president of Italy?"')
