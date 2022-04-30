@@ -2,6 +2,7 @@ import sys
 import requests
 import lxml.html
 import rdflib
+import urllib.parse as parse
 
 WIKI_PREFIX = "http://en.wikipedia.org"
 GRAPH_FILE_NAME = "ontology.nt"
@@ -30,7 +31,7 @@ def get_countries_urls():
     countries_relative_urls.insert(169, doc.xpath(WESTERN_SAHARA_XPATH_QUERY)[0])
     countries_relative_urls.insert(36, doc.xpath(AFGHANISTAN_XPATH_QUERY)[0])
     countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    # countries_urls = ["https://en.wikipedia.org/wiki/Indonesia"]
+    # countries_urls = ["https://en.wikipedia.org/wiki/The_Bahamas"]
     return countries_urls
 
 
@@ -44,6 +45,8 @@ def create_graph():
 def add_entities_to_graph(g, countries_urls):
     for country_url in countries_urls:
         country_name = country_url.split("/")[-1]
+        if '%' in country_name:
+                country_name = parse.unquote(country_name).replace('"','')
         countriesSet.add(country_name)
         print(country_name)
         r = requests.get(country_url)
@@ -66,6 +69,8 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
     if relation == 'government_in':
         for result_url in query_result_list:
             result_name = result_url.split("/")[-1].strip() #removed split()[0]
+            if '%' in result_name:
+                result_name = parse.unquote(result_name).replace('"','')
             #result_name = "_".join(result_name.split() )
 
             # TODO delete after debug print(result_name, "-", relation, "-", country_name)
@@ -75,6 +80,8 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
     else:
         result_url = query_result_list[0]
         result_name = result_url.split("/")[-1].strip().split()[0]
+        if '%' in result_name:
+                result_name = parse.unquote(result_name).replace('"','')
         #result_name = "_".join(result_name.split() )
 
         # TODO delete after debug print(result_name, "-", relation, "-", country_name)
@@ -97,11 +104,15 @@ def add_person_bplace_entity_to_graph(g, doc, person_name, relation):
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
         result_name = result_url.split("/")[-1].strip()
+        if '%' in result_name:
+                result_name = parse.unquote(result_name).replace('"','')
         if result_name not in countriesSet:
             query_result_list = doc.xpath(PERSON_BIRTHPLACE_XPATH_QUERY_TEXT)
             if len(query_result_list) > 0:
                 result_url = query_result_list[0]
                 result_name = result_url.replace(',','').strip().replace(' ','_')
+                if '%' in result_name:
+                    result_name = parse.unquote(result_name).replace('"','')
                 if result_name not in countriesSet:
                     return
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
@@ -114,6 +125,8 @@ def add_person_bday_entity_to_graph(g, doc, person_name, xpath_query, relation):
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
         result_name = result_url
+        if '%' in result_name:
+                result_name = parse.unquote(result_name).replace('"','')
         # TODO delete after debug print(person_name, "-", relation, "-", result_name)
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
