@@ -140,6 +140,8 @@ def ask_question(question):
     answer = ""
     if "Who" in question and "president" not in question and "minister" not in question:
         parsed_list = [ans.pre_c for ans in list(raw_answer)]
+        if len(parsed_list) == 0:
+            return
         if parsed_list[0] != None:
             answer = "President of " + parsed_list[0].split("/")[-1].replace('_', ' ')
         parsed_list = [ans.pri_c for ans in list(raw_answer)]
@@ -147,6 +149,8 @@ def ask_question(question):
             answer = "Prime minister of "  + parsed_list[0].split("/")[-1].replace('_', ' ')
     else:
         parsed_list = sorted([ans.x.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)])
+        if len(parsed_list) == 0:
+            return
         answer = ', '.join(parsed_list)
         if "area" in question:
             answer += " km squared"
