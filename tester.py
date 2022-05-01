@@ -125,7 +125,7 @@ if __name__ == '__main__':
     os.system('python geo_qa.py question "How many presidents were born in Iceland? "')
 
     print("\nquestion 29:How many presidents were born in Republic of Ireland? ")
-    print("1")
+    print("0")
     os.system('python geo_qa.py question "How many presidents were born in Republic of Ireland? "')
 
 

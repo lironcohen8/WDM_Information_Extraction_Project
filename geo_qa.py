@@ -139,14 +139,21 @@ def ask_question(question):
     raw_answer = graph.query(sparql_query)
     answer = ""
     if "Who" in question and "president" not in question and "minister" not in question:
-        parsed_list = [ans.pre_c for ans in list(raw_answer)]
-        if len(parsed_list) == 0:
-            return
-        if parsed_list[0] != None:
-            answer = "President of " + parsed_list[0].split("/")[-1].replace('_', ' ')
-        parsed_list = [ans.pri_c for ans in list(raw_answer)]
-        if parsed_list[0] != None:
-            answer = "Prime minister of "  + parsed_list[0].split("/")[-1].replace('_', ' ')
+
+        parsed_list_pre = [ans.pre_c for ans in list(raw_answer)]
+        if len(parsed_list_pre) > 0 and parsed_list_pre[0] != None:
+            parsed_list_pre = ["President of " + ans.split("/")[-1].replace('_', ' ') for ans in parsed_list_pre]
+        else:
+            parsed_list_pre = []
+        
+        parsed_list_pri = [ans.pri_c for ans in list(raw_answer)]
+        if len(parsed_list_pri) > 0 and parsed_list_pri[0] != None:
+            parsed_list_pri = ["Prime minister of " + ans.split("/")[-1].replace('_', ' ') for ans in parsed_list_pri]
+        else:
+            parsed_list_pri = []
+            
+        parsed_list = sorted(parsed_list_pre + parsed_list_pri)
+        answer = ', '.join(parsed_list)
     else:
         parsed_list = sorted([ans.x.split("/")[-1].replace('_', ' ') for ans in list(raw_answer)])
         if len(parsed_list) == 0:
