@@ -31,18 +31,18 @@ def get_countries_urls():
     countries_relative_urls.insert(169, doc.xpath(WESTERN_SAHARA_XPATH_QUERY)[0])
     countries_relative_urls.insert(36, doc.xpath(AFGHANISTAN_XPATH_QUERY)[0])
     countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    # countries_urls = ["https://en.wikipedia.org/wiki/Channel_Islands"]
+    countries_urls = ["https://en.wikipedia.org/wiki/Israel"]
     return countries_urls
 
 
 def create_graph():
     graph = rdflib.Graph()
     countries_urls = get_countries_urls()
-    add_entities_to_graph(graph, countries_urls)
+    add_triplets_to_graph(graph, countries_urls)
     graph.serialize(GRAPH_FILE_NAME, format="nt", encoding="utf-8", errors="ignore")
 
 
-def add_entities_to_graph(g, countries_urls):
+def add_triplets_to_graph(g, countries_urls):
     for country_url in countries_urls:
         country_name = country_url.split("/")[-1]
         if '%' in country_name:
@@ -51,18 +51,18 @@ def add_entities_to_graph(g, countries_urls):
         print(country_name)
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
-        add_country_entity_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
-        add_country_entity_to_graph(g, doc, country_name, PRIME_MINISTER_XPATH_QUERY, 'prime_minister_of')
-        add_country_entity_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
-        add_country_entity_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
-        add_country_entity_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
+        add_country_triplet_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
+        add_country_triplet_to_graph(g, doc, country_name, PRIME_MINISTER_XPATH_QUERY, 'prime_minister_of')
+        add_country_triplet_to_graph(g, doc, country_name, AREA_XPATH_QUERY, 'area_of')
+        add_country_triplet_to_graph(g, doc, country_name, GOVERNMENT_XPATH_QUERY, 'government_in')
+        add_country_triplet_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
         if (country_name in ("Belarus", "Dominican_Republic", "Malta", "Russia")):
-            add_country_entity_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
+            add_country_triplet_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
         else:
-            add_country_entity_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
+            add_country_triplet_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
 
 
-def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
+def add_country_triplet_to_graph(g, doc, country_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
     if len(query_result_list) == 0:
         return
@@ -89,17 +89,17 @@ def add_country_entity_to_graph(g, doc, country_name, xpath_query, relation):
             rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
             rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
         if relation in ['president_of', 'prime_minister_of']:
-             add_person_entities_to_graph(g, result_name, f"{WIKI_PREFIX}{result_url}")
+             add_person_triplets_to_graph(g, result_name, f"{WIKI_PREFIX}{result_url}")
 
 
-def add_person_entities_to_graph(g, person_name, person_url):
+def add_person_triplets_to_graph(g, person_name, person_url):
     r = requests.get(person_url)
     doc = lxml.html.fromstring(r.content)
-    add_person_bday_entity_to_graph(g, doc, person_name, PERSON_BIRTHDATE_XPATH_QUERY, 'born_on')
-    add_person_bplace_entity_to_graph(g, doc, person_name, 'born_in')
+    add_person_bday_triplet_to_graph(g, doc, person_name, PERSON_BIRTHDATE_XPATH_QUERY, 'born_on')
+    add_person_bplace_triplet_to_graph(g, doc, person_name, 'born_in')
 
 
-def add_person_bplace_entity_to_graph(g, doc, person_name, relation):
+def add_person_bplace_triplet_to_graph(g, doc, person_name, relation):
     query_result_list = doc.xpath(PERSON_BIRTHPLACE_XPATH_QUERY_A)
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
@@ -120,7 +120,7 @@ def add_person_bplace_entity_to_graph(g, doc, person_name, relation):
                 rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}")))
 
 
-def add_person_bday_entity_to_graph(g, doc, person_name, xpath_query, relation):
+def add_person_bday_triplet_to_graph(g, doc, person_name, xpath_query, relation):
     query_result_list = doc.xpath(xpath_query)
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
@@ -140,7 +140,6 @@ def ask_question(question):
     raw_answer = graph.query(sparql_query)
     answer = ""
     if "Who" in question and "president" not in question and "minister" not in question:
-
         parsed_list_pre = [ans.pre_c for ans in list(raw_answer)]
         if len(parsed_list_pre) > 0 and parsed_list_pre[0] != None:
             parsed_list_pre = ["President of " + ans.split("/")[-1].replace('_', ' ') for ans in parsed_list_pre]
@@ -171,7 +170,7 @@ def parse_question_to_query(question):
     if question_word == "Who":  # questions 1,2,11
         if "president" in question:
             country_name = question.split("of_", 1)[-1][:-1]
-            return generate_country_sparql_query( country_name, "president_of")
+            return generate_country_sparql_query(country_name, "president_of")
         elif "minister" in question:
             country_name = question.split("of_", 1)[-1][:-1]
             return generate_country_sparql_query(country_name, 'prime_minister_of')
