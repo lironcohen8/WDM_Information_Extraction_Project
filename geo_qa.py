@@ -68,12 +68,9 @@ def add_country_triplet_to_graph(g, doc, country_name, xpath_query, relation):
         return
     if relation == 'government_in':
         for result_url in query_result_list:
-            result_name = result_url.split("/")[-1].strip() #removed split()[0]
+            result_name = result_url.split("/")[-1].strip()
             if '%' in result_name:
                 result_name = parse.unquote(result_name).replace('"','')
-            #result_name = "_".join(result_name.split() )
-
-            # TODO delete after debug print(result_name, "-", relation, "-", country_name)
             g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
                 rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
                 rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
@@ -82,9 +79,6 @@ def add_country_triplet_to_graph(g, doc, country_name, xpath_query, relation):
         result_name = result_url.split("/")[-1].strip().split()[0]
         if '%' in result_name:
                 result_name = parse.unquote(result_name).replace('"','')
-        #result_name = "_".join(result_name.split() )
-
-        # TODO delete after debug print(result_name, "-", relation, "-", country_name)
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
             rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
             rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
@@ -127,7 +121,6 @@ def add_person_bday_triplet_to_graph(g, doc, person_name, xpath_query, relation)
         result_name = result_url
         if '%' in result_name:
                 result_name = parse.unquote(result_name).replace('"','')
-        # TODO delete after debug print(person_name, "-", relation, "-", result_name)
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}")))
@@ -289,17 +282,6 @@ def generate_born_count_sparql_query(country_name):
             f"?p <{WIKI_PREFIX}/president_of> ?c . " \
             f"?p <{WIKI_PREFIX}/born_in> <{WIKI_PREFIX}/{country_name}> " \
             "}"
-
-
-# TODO: Add encodings to fix president of Mexico for example
-# TODO: Ask about substrings that are included in Wiki prefix
-# TODO: fix birth place query
-# TODO: Check on NOVA
-
-# TODO: Edge cases: DO NOT DELETE THESE TODOS
-# Add Western Sahara (170) and Channel Islands (190) and afghanistan
-# infobox[1] because hungary had more than 1 infobox
-# split by of was wrong in president of isle of man, added 1
 
 
 if __name__ == '__main__':
