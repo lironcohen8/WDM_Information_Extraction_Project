@@ -14,7 +14,7 @@ AFGHANISTAN_XPATH_QUERY = "//tr/td//a[@title = 'Afghanistan']/@href"
 PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'President']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
 PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//*[text() = 'Prime Minister']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
 POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Population')]/following::tr[1]/td[1]/text()[1]"
-POPULATION_SPECIAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Population')]/following::tr[1]/td/span/text()"
+POPULATION_SPECIAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Population']/following::tr[1]/td//span/text()"
 AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
 GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Government']/ancestor::tr/td//a[contains(@href, 'wiki')]/@href"
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Capital']/following::a[1]/@href"
@@ -31,7 +31,7 @@ def get_countries_urls():
     countries_relative_urls.insert(169, doc.xpath(WESTERN_SAHARA_XPATH_QUERY)[0])
     countries_relative_urls.insert(36, doc.xpath(AFGHANISTAN_XPATH_QUERY)[0])
     countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    # countries_urls = ["https://en.wikipedia.org/wiki/The_Bahamas"]
+    # countries_urls = ["https://en.wikipedia.org/wiki/Channel_Islands"]
     return countries_urls
 
 
@@ -132,6 +132,7 @@ def add_person_bday_entity_to_graph(g, doc, person_name, xpath_query, relation):
                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}")))
 
+
 def ask_question(question):
     sparql_query = parse_question_to_query(question)
     graph = rdflib.Graph()
@@ -151,7 +152,7 @@ def ask_question(question):
             parsed_list_pri = ["Prime minister of " + ans.split("/")[-1].replace('_', ' ') for ans in parsed_list_pri]
         else:
             parsed_list_pri = []
-            
+
         parsed_list = sorted(parsed_list_pre + parsed_list_pri)
         answer = ', '.join(parsed_list)
     else:
@@ -281,6 +282,7 @@ def generate_forms_sparql_query(form1, form2):
                 f"filter (strEnds(str(?f1),'/{form1}') " \
                 f"&& strEnds(str(?f2),'/{form2}'))" \
             " }"
+
 
 def generate_born_count_sparql_query(country_name):
     return "select ?p (count(distinct ?p) as ?x) where " \
