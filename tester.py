@@ -94,15 +94,15 @@ if __name__ == '__main__':
     os.system('python geo_qa.py question "List all countries whose capital name contains the string hi"')
 
     print("\nquestion 22:List all countries whose capital name contains the string free")
-    print(" Sierra leone")
+    print("Sierra Leone")
     os.system('python geo_qa.py question "List all countries whose capital name contains the string free"')
     
     print("\nquestion 23:List all countries whose capital name contains the string alo")
-    print(" Niue, Tonga")
+    print("Niue, Tonga")
     os.system('python geo_qa.py question "List all countries whose capital name contains the string alo"')
     
     print("\nquestion 24:List all countries whose capital name contains the string baba")
-    print(" Eswatini, Ethiopia")
+    print("Eswatini, Ethiopia")
     os.system('python geo_qa.py question "List all countries whose capital name contains the string baba"')
     
     print("\nquestion 25:How many  Absolute monarchy are also Unitary state?")
