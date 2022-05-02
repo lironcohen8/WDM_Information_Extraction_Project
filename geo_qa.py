@@ -135,6 +135,8 @@ def add_person_bday_triplet_to_graph(g, doc, person_name, xpath_query, relation)
 
 def ask_question(question):
     sparql_query = parse_question_to_query(question)
+    if sparql_query == None:
+        return
     graph = rdflib.Graph()
     graph.parse(GRAPH_FILE_NAME, format="nt")
     raw_answer = graph.query(sparql_query)
