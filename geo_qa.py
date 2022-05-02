@@ -15,7 +15,9 @@ PRESIDENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Pr
 PRIME_MINISTER_XPATH_QUERY = "//table[contains(@class,'infobox')][1]//*[text() = 'Prime Minister']/ancestor::tr/td//a[contains(@href, 'wiki')][1]/@href"
 POPULATION_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Population')]/following::tr[1]/td[1]/text()[1]"
 POPULATION_SPECIAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Population']/following::tr[1]/td//span/text()"
+POPULATION_CHANNEL_ISLANDS_QUERY = "//table[contains(@class, 'infobox')][1]/tbody/tr[21]/td/text()[1]"
 AREA_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[contains(text(), 'Area')]/following::tr[1]/td/text()[1]"
+AREA_CHANNEL_ISLANDS_QUERY = "//table[contains(@class, 'infobox')][1]/tbody/tr[10]/td/text()[1]"
 GOVERNMENT_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Government']/ancestor::tr/td//a[contains(@href, 'wiki')]/@href"
 CAPITAL_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Capital']/following::a[1]/@href"
 PERSON_BIRTHDATE_XPATH_QUERY = "//table[contains(@class, 'infobox')][1]//*[text() = 'Born']/parent::tr//span[@class ='bday']/text()"
@@ -31,13 +33,16 @@ def get_countries_urls():
     countries_relative_urls.insert(169, doc.xpath(WESTERN_SAHARA_XPATH_QUERY)[0])
     countries_relative_urls.insert(36, doc.xpath(AFGHANISTAN_XPATH_QUERY)[0])
     countries_urls = [f"{WIKI_PREFIX}{url}" for url in countries_relative_urls]
-    countries_urls = ["https://en.wikipedia.org/wiki/Israel"]
+    # countries_urls = ["https://en.wikipedia.org/wiki/Israel"]
     return countries_urls
 
 
 def create_graph():
     graph = rdflib.Graph()
     countries_urls = get_countries_urls()
+    for country_url in countries_urls:
+        country_name = country_url.split("/")[-1]
+        countriesSet.add(country_name)
     add_triplets_to_graph(graph, countries_urls)
     graph.serialize(GRAPH_FILE_NAME, format="nt", encoding="utf-8", errors="ignore")
 
@@ -45,10 +50,9 @@ def create_graph():
 def add_triplets_to_graph(g, countries_urls):
     for country_url in countries_urls:
         country_name = country_url.split("/")[-1]
-        if '%' in country_name:
-                country_name = parse.unquote(country_name).replace('"','')
-        countriesSet.add(country_name)
-        print(country_name)
+        #if '%' in country_name:
+         #   country_name = parse.unquote(country_name).replace('"','')
+        print(country_name) #TODO delete
         r = requests.get(country_url)
         doc = lxml.html.fromstring(r.content)
         add_country_triplet_to_graph(g, doc, country_name, PRESIDENT_XPATH_QUERY, 'president_of')
@@ -58,6 +62,9 @@ def add_triplets_to_graph(g, countries_urls):
         add_country_triplet_to_graph(g, doc, country_name, CAPITAL_XPATH_QUERY, 'capital_of')
         if (country_name in ("Belarus", "Dominican_Republic", "Malta", "Russia")):
             add_country_triplet_to_graph(g, doc, country_name, POPULATION_SPECIAL_XPATH_QUERY, 'population_of')
+        elif country_name == "Channel_Islands":
+            add_country_triplet_to_graph(g, doc, country_name, POPULATION_CHANNEL_ISLANDS_QUERY, 'population_of')
+            add_country_triplet_to_graph(g, doc, country_name, AREA_CHANNEL_ISLANDS_QUERY, 'area_of')
         else:
             add_country_triplet_to_graph(g, doc, country_name, POPULATION_XPATH_QUERY, 'population_of')
 
@@ -69,16 +76,16 @@ def add_country_triplet_to_graph(g, doc, country_name, xpath_query, relation):
     if relation == 'government_in':
         for result_url in query_result_list:
             result_name = result_url.split("/")[-1].strip()
-            if '%' in result_name:
-                result_name = parse.unquote(result_name).replace('"','')
+            #if '%' in result_name:
+             #   result_name = parse.unquote(result_name).replace('"','')
             g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
                 rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
                 rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
     else:
         result_url = query_result_list[0]
         result_name = result_url.split("/")[-1].strip().split()[0]
-        if '%' in result_name:
-                result_name = parse.unquote(result_name).replace('"','')
+        #if '%' in result_name:
+         #       result_name = parse.unquote(result_name).replace('"','')
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}"),
             rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
             rdflib.URIRef(f"{WIKI_PREFIX}/{country_name}")))
@@ -98,15 +105,15 @@ def add_person_bplace_triplet_to_graph(g, doc, person_name, relation):
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
         result_name = result_url.split("/")[-1].strip()
-        if '%' in result_name:
-                result_name = parse.unquote(result_name).replace('"','')
+        #if '%' in result_name:
+         #       result_name = parse.unquote(result_name).replace('"','')
         if result_name not in countriesSet:
             query_result_list = doc.xpath(PERSON_BIRTHPLACE_XPATH_QUERY_TEXT)
             if len(query_result_list) > 0:
                 result_url = query_result_list[0]
                 result_name = result_url.replace(',','').strip().replace(' ','_')
-                if '%' in result_name:
-                    result_name = parse.unquote(result_name).replace('"','')
+                #if '%' in result_name:
+                 #   result_name = parse.unquote(result_name).replace('"','')
                 if result_name not in countriesSet:
                     return
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
@@ -119,8 +126,8 @@ def add_person_bday_triplet_to_graph(g, doc, person_name, xpath_query, relation)
     if len(query_result_list) > 0:
         result_url = query_result_list[0]
         result_name = result_url
-        if '%' in result_name:
-                result_name = parse.unquote(result_name).replace('"','')
+      #  if '%' in result_name:
+       #         result_name = parse.unquote(result_name).replace('"','')
         g.add((rdflib.URIRef(f"{WIKI_PREFIX}/{person_name}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{relation}"),
                rdflib.URIRef(f"{WIKI_PREFIX}/{result_name}")))
@@ -253,7 +260,7 @@ def generate_substring_sparql_query(substring):
     return "select ?x where " \
             "{" \
             f"?c <{WIKI_PREFIX}/capital_of> ?x " \
-            f"filter contains(lcase(str(?c)),lcase('{substring}'))" \
+            f"filter contains(lcase(strafter(str(?c), '{WIKI_PREFIX}/')),lcase('{substring}'))" \
             "}"
 
 
