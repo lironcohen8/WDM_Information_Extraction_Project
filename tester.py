@@ -62,7 +62,7 @@ if __name__ == '__main__':
     os.system('python geo_qa.py question "What is the form of government in Sweden?"')
 
     print("\nquestion 14:What is the form of government in Bahrain?")
-    print("Parliamentary, Semi-constitutional monarchy, Unitary state")
+    print("Islamic state, Parliamentary, Semi-constitutional monarchy, Unitary state")
     os.system('python geo_qa.py question "What is the form of government in Bahrain?"')
 
     print("\nquestion 15:What is the form of government in North Macedonia?")
@@ -116,8 +116,8 @@ if __name__ == '__main__':
     os.system('python geo_qa.py question "How many Dictatorship are also Presidential system?"')
     
     print("\nquestion 27:How many Dictatorship are also Authoritarian?")
-    # print("equatorial guinea, djibouti, rwanda")
-    print("3")
+    # print("djibouti, rwanda")
+    print("2")
     os.system('python geo_qa.py question "How many Dictatorship are also Authoritarian?"')
     
     print("\nquestion 28:How many presidents were born in Iceland? ")
